@@ -37,6 +37,12 @@ public class JwtUtil {
                 .getBody(); // Retorna o corpo das claims
     }
 
+    // Extrai o email do usuário do token JWT
+    public String extrairEmailToken(String token) {
+        // Obtém o assunto (nome de usuário) das claims do token
+        return extractClaims(token).getSubject();
+    }
+
     // Extrai o nome de usuário do token JWT
     public String extractUsername(String token) {
         // Obtém o assunto (nome de usuário) das claims do token
