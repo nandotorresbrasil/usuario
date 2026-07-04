@@ -4,6 +4,7 @@ package com.javanauta.usuario.infrastructure.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -11,6 +12,9 @@ import lombok.*;
 @Entity
 @Table(name = "endereco")
 @Builder
+@Data
+
+
 
 public class Endereco {
 
