@@ -48,23 +48,24 @@ public class UsuarioController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping
+    // 🔄 Ajustado: Mantido apenas o @PatchMapping para atualizações gerais do usuário
+    @PatchMapping
     public ResponseEntity<UsuarioDTO> atualizDadoUsuario(@RequestBody UsuarioDTO dto,
                                                          @RequestHeader("Authorization") String token) {
         return ResponseEntity.ok(usuarioService.atualizaDadosUsuario(token, dto));
     }
 
-    // 🔄 Adicionado: Endpoint para atualizar Telefone
+    // Endpoint para atualizar Telefone
     @PutMapping("/telefone")
     public ResponseEntity<Void> atualizaTelefone(@RequestParam("id") Long id, @RequestBody TelefoneDTO dto) {
         usuarioService.atualizaTelefone(id, dto);
         return ResponseEntity.accepted().build();
     }
 
-    // 🔄 Adicionado: Endpoint para atualizar Endereço
+    // Endpoint para atualizar Endereço
     @PutMapping("/endereco")
     public ResponseEntity<Void> atualizaEndereco(@RequestParam("id") Long id, @RequestBody EnderecoDTO dto) {
         usuarioService.atualizaEndereco(id, dto);
         return ResponseEntity.accepted().build();
     }
-}}
+}
