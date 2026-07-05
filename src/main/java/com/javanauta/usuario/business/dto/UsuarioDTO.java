@@ -9,6 +9,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Data
+
 
 public class UsuarioDTO {
 
