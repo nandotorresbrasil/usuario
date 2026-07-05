@@ -1,6 +1,8 @@
 package com.javanauta.usuario.business;
 
 import com.javanauta.usuario.business.converter.UsuarioConverter;
+import com.javanauta.usuario.business.dto.EnderecoDTO;
+import com.javanauta.usuario.business.dto.TelefoneDTO;
 import com.javanauta.usuario.business.dto.UsuarioDTO;
 import com.javanauta.usuario.infrastructure.entity.Usuario;
 import com.javanauta.usuario.infrastructure.exceptions.ConflictException;
@@ -10,7 +12,6 @@ import com.javanauta.usuario.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 
 @Service
 @RequiredArgsConstructor
@@ -39,8 +40,8 @@ public class UsuarioService {
             throw new ConflictException("Email já cadastrado" + e.getCause());
         }
     }
-    public boolean verificaEmailExistente(String email) { // no usages
 
+    public boolean verificaEmailExistente(String email) {
         return usuarioRepository.existsByEmail(email);
     }
 
@@ -50,27 +51,29 @@ public class UsuarioService {
     }
 
     public void deletaUsuarioPorEmail(String email){
-
         usuarioRepository.deleteByEmail(email);
     }
 
     public UsuarioDTO atualizaDadosUsuario(String token, UsuarioDTO dto){
-        //Aque buscamos o email do usuário através do token (tirar a obrigatoriedade do imail)
         String email = jwtUtil.extrairEmailToken(token.substring(7));
 
-        //Criptografia de senha
         dto.setSenha(dto.getSenha() != null ? passwordEncoder.encode(dto.getSenha()) : null);
 
-        //Buscou os dados do usuário no banco de dados
         Usuario usuarioEntity = usuarioRepository.findByEmail(email).orElseThrow(() ->
                 new ResourceNotFoundException("Email não localizado"));
 
-        //Mesclou os dados que recebemos na requisição DTO com os dados do banco de dados
         Usuario usuario = usuarioConverter.updateUsuario(dto, usuarioEntity);
 
-        //Salvou os dados do usuário convertido e depois pegou o retorno e converteu para usuarioDTO
         return usuarioConverter.paraUsuarioDTO(usuarioRepository.save(usuario));
     }
 
+    // 🔄 Adicionado: Método para satisfazer a Controller (Lógica interna a implementar depois)
+    public void atualizaTelefone(Long id, TelefoneDTO dto) {
+        // TODO: Implementar a lógica de atualização de telefone no banco de dados
+    }
 
+    // 🔄 Adicionado: Método para satisfazer a Controller (Lógica interna a implementar depois)
+    public void atualizaEndereco(Long id, EnderecoDTO dto) {
+        // TODO: Implementar a lógica de atualização de endereço no banco de dados
+    }
 }

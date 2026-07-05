@@ -48,8 +48,8 @@ public class UsuarioController {
         return ResponseEntity.ok().build();
     }
 
-    // 🔄 Ajustado: Mantido apenas o @PatchMapping para atualizações gerais do usuário
-    @PatchMapping
+    // 🔄 Voltamos para o @PutMapping padrão da aula
+    @PutMapping
     public ResponseEntity<UsuarioDTO> atualizDadoUsuario(@RequestBody UsuarioDTO dto,
                                                          @RequestHeader("Authorization") String token) {
         return ResponseEntity.ok(usuarioService.atualizaDadosUsuario(token, dto));
