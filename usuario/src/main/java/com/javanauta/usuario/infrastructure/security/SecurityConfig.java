@@ -31,37 +31,41 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // Inicializa o filtro customizado do JWT
         JwtRequestFilter jwtRequestFilter = new JwtRequestFilter(jwtUtil, userDetailsService);
 
         http
                 .csrf(AbstractHttpConfigurer::disable) // Desativa proteção CSRF para APIs REST
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/usuario/login").permitAll() // Login público
-                        .requestMatchers(HttpMethod.GET, "/auth").permitAll() // Endpoint de autenticação público
-                        .requestMatchers(HttpMethod.POST, "/usuario").permitAll() // Cadastro público
+                        // 1. Endpoints Públicos (Acesso livre sem Token)
+                        .requestMatchers("/usuario/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/auth").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/usuario").permitAll()
 
-                        // 🛠️ PERMISSÕES RESTRITAS COM JWT (Requerem autenticação)
-                        .requestMatchers(HttpMethod.PATCH, "/usuario").authenticated() // Permite PATCH na rota raiz
-                        .requestMatchers(HttpMethod.PUT, "/usuario/**").authenticated()  // Permite PUT nas sub-rotas (/telefone, /endereco)
-                        .requestMatchers("/usuario", "/usuario/**").authenticated()     // Garante proteção total de rotas e sub-rotas
+                        // 2. Endpoints Protegidos (Exigem o cabeçalho Authorization Bearer)
+                        .requestMatchers(HttpMethod.PUT, "/usuario/**").authenticated()   // Libera o PUT de endereço e telefone
+                        .requestMatchers(HttpMethod.DELETE, "/usuario/**").authenticated() // Libera a deleção protegida
+                        .requestMatchers(HttpMethod.GET, "/usuario/**").authenticated()    // Libera buscas protegidas
 
-                        .anyRequest().authenticated() // Qualquer outra requisição exige login
+                        // 3. Qualquer outra rota não mapeada exige login
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Sem estado (Stateless)
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Define a API como Stateless
                 )
-                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); // Filtro JWT antes do padrão
+                // Injeta o filtro do JWT antes do filtro padrão de autenticação por usuário/senha
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(); // Bean para criptografia de senhas
     }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+        return authenticationConfiguration.getAuthenticationManager(); // Gerenciador de autenticação do Spring
     }
 }
